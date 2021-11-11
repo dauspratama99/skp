@@ -64,51 +64,8 @@ class Skps extends Model
                 'skps.*'
             )
             ->join('periodes','periodes.id','skps.periode_id')
-            ->join('targets','targets.nip_rated','skps.nip_rated');
+            ->join('targets','targets.nip_rated','skps.nip_rated' ,'LIMIT 1' );
     }
 
-    // {
-    //     return $this->belongsTo('app/User', 'nip_rated');
-    // }
-    // public function users_nip_evaluator()
-    // {
-    //     return $this->belongsTo('app/User', 'nip_evaluator');
-    // }
-    // public function target()
-    // {
-    //     return $this->belongsTo('app/User', 'nip_rated');
-    // }
-
-    // public function periode_id_periode()
-    // {
-    //     return $this->belongsTo('app/Periode', 'periode_id');
-    // }
-
-    // public function position_rated_position()
-    // {
-    //     return $this->belongsTo('app/Position', 'rated_position_id');
-    // }
-
-    // public function position_evaluator_position()
-    // {
-    //     return $this->belongsTo('app/Position', 'evaluator_position_id');
-    // }
-
-    // public function rankgroup_rated_rankgroup()
-    // {
-    //     return $this->belongsTo('app/RankGroup', 'rated_rankgroup_id');
-    // }
-    // public function rankgroup_evaluator_rankgroup()
-    // {
-    //     return $this->belongsTo('app/RankGroup', 'evaluator_rankgroup_id');
-    // }
-
-    // public function unit_rated_unit()
-    // {
-    //     return $this->belongsTo('app/Unit', 'rated_unit_id');
-    // }
-    // public function unit_evaluator_unit()
-    // {
-    //     return $this->belongsTo('app/Unit', 'evaluator_unit_id');
-    // }
+   
 }

@@ -22,32 +22,16 @@ class SkpsController extends Controller
 
     public function index()
     {
-        // $data['user'] = User::with('skps_nip_rated', 'skps_nip_evaluator')
-        //     ->get();
-        // $data['periode'] = Periode::with('periode_skps')
-        //     ->get();
-        // $data['position'] = Position::with('skps_rated_position', 'skps_evaluator_position')
-        //     ->get();
-        // $data['rankgruop'] = RankGroup::with('skps_rated_rankgroup', 'skps_evaluator_rankgroup')->get();
-        // $data['unit'] = Unit::with('skps_rated_unit', 'skps_evaluator_unit')->get();
-        // $data['skps'] = DB::table('skps')->get();
-        // // dd($data);
-        $data = Skps::user_name()->get();
+
+        $data = Skps::user_name()->limit(1)->get();
         $login = Auth::user();
         $role_id = $login->role_id;
-
-        // return $data;
-        // $data['periode'] = Skps::periode();
         return view(
             'skps/index',
             [
-                'user'=>$data,
-                'role_id'=>$role_id,
+                'user' => $data,
+                'role_id' => $role_id,
             ]
-                
-                
-            
-          
         );
     }
 
@@ -71,8 +55,8 @@ class SkpsController extends Controller
                 'rankgroup' => $rankgroup,
                 'periode' => $periode,
                 'unit' => $unit,
-                'role_id'=>$role_id,
-               
+                'role_id' => $role_id,
+
             ]
         );
     }
@@ -152,7 +136,7 @@ class SkpsController extends Controller
                 'rankgroup' => $rankgroup,
                 'periode' => $periode,
                 'unit' => $unit,
-                'role_id'=>$role_id,
+                'role_id' => $role_id,
             ]
         );
     }
@@ -182,47 +166,13 @@ class SkpsController extends Controller
             'evaluator_unit_id'     => 'required_if:role,Admin',
             'evaluator_position_id'     => 'required_if:role,Admin',
         ]);
-        
+
         $skps->objection_rated = $request->input('objection_rated');
         $skps->save();
 
-            return redirect()
-                ->route('skps')
-                ->with('message', 'Data berhasil diedit');
-
-        // if ($validator->fails()) {
-        //     return redirect()
-        //         ->route('skps.update', $skps->nip_rated)
-        //         ->withErrors($validator)
-        //         ->withInput();
-        // // } else {
-        //     if($request->role=='Admin'){
-        //         $skps->nip_rated = $request->input('nip_rated');
-        //         $skps->periode_id = $request->input('periode_id');
-        //         $skps->rated_unit_id = $request->input('rated_unit_id');
-        //         $skps->rated_position_id = $request->input('rated_position_id');
-        //         $skps->rated_rankgroup_id = $request->input('rated_rankgroup_id');
-        //         $skps->nip_evaluator = $request->input('nip_evaluator');
-        //         $skps->evaluator_rankgroup_id = $request->input('evaluator_rankgroup_id');
-        //         $skps->evaluator_unit_id = $request->input('evaluator_unit_id');
-        //         $skps->evaluator_position_id = $request->input('evaluator_position_id');
-        //     }
-
-        //         $skps->commitment = $request->input('commitment');
-        //         $skps->discipline = $request->input('discipline');
-        //         $skps->cooperation = $request->input('cooperation');
-        //         $skps->leadership = $request->input('leadership');
-        //         $skps->integrity = $request->input('integrity');
-        //         $skps->service_oriented = $request->input('service_oriented');
-        //         $skps->objection_rated = $request->input('objection_rated');
-        //         $skps->response_evaluator = $request->input('response_evaluator');
-        //         $skps->superior_decision = $request->input('superior_decision');
-        //         $skps->recommendation = $request->input('recommendation');
-        //         $skps->start_date = $request->input('start_date');
-        //         $skps->date_given_to_superiors = $request->input('date_given_to_superiors');
-
-            
-        
+        return redirect()
+            ->route('skps')
+            ->with('message', 'Data berhasil diedit');
     }
 
     public function destroy(Skps $skps)
@@ -233,15 +183,27 @@ class SkpsController extends Controller
             ->with('message', 'Data berhasil dihapus');
     }
 
-    public function cetak()
+    public function cetak(Request $request)
     {
         $id = request()->get('id');
-        // dd($id);
-        $data['user'] = Skps::user_name()->where('skps.nip_rated','=',$id)->get();
 
-        $data['data'] = Skps::user_name()->where('skps.nip_rated','=',$id)->first();
+        $namaTarget = $request->nip_rated;
+
+       
+
+        $data['user'] = Skps::user_name()->where('skps.nip_rated', '=', $id)->get();
+        $data['data'] = Skps::user_name()->where('skps.nip_rated', '=', $id)->first();
+        
+        $data['target'] = DB::table('skps')
+                        ->join('targets','skps.nip_rated','targets.nip_rated')
+                        ->join('realiations','targets.id','realiations.id')
+                        ->where('skps.nip_rated', $id)
+                        ->get();
+
+      
+        // dd($data['target']);
         return view(
-            'skps/cetak',
+            'skps/cetakRevisi',
             $data
         );
     }
@@ -250,14 +212,14 @@ class SkpsController extends Controller
     {
         $id = request()->get('id');
         // dd($id);
-        $data['user'] = Skps::user_name()->where('skps.nip_rated','=',$id)->get();
+        $data['user'] = Skps::user_name()->where('skps.nip_rated', '=', $id)->get();
 
-        $data['data'] = Skps::user_name()->where('skps.nip_rated','=',$id)->first();
-        
+        $data['data'] = Skps::user_name()->where('skps.nip_rated', '=', $id)->first();
+
         $data['nilai'] = DB::table('skps')->get();
         return view(
             'skps/cetak_nilai',
-            
+
             $data
         );
     }
@@ -266,17 +228,17 @@ class SkpsController extends Controller
     {
         $id = request()->get('id');
         // dd($id);
-        $data['user'] = Skps::user_name()->where('skps.nip_rated','=',$id)->get();
+        $data['user'] = Skps::user_name()->where('skps.nip_rated', '=', $id)->get();
 
-        $data['data'] = Skps::user_name()->where('skps.nip_rated','=',$id)->first();
-        
+        $data['data'] = Skps::user_name()->where('skps.nip_rated', '=', $id)->first();
+
         $data['nilai'] = DB::table('skps')->get();
-        $data['atasan'] = DB::table('users')->where('nip','1919030322889')->get();
+        $data['atasan'] = DB::table('users')->where('nip', '1919030322889')->get();
         $data['skps'] = DB::table('skps')->get();
-       
+
         return view(
             'skps/cetak_nilai_akhir',
-            
+
             $data
         );
     }
